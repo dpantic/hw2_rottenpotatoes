@@ -1,0 +1,33 @@
+-#  This file is app/views/movies/index.html.haml
+%h1 All Movies
+
+.filter
+  = search_form_for @q do |f|
+    %fieldset.rating
+      = f.hidden_field :s, :value => params[:q] && params[:q][:s]
+      %strong
+        Include:
+      - ratings_list.each do |r|
+        = f.label r, :for => "ratings_#{r}"
+        = f.check_box :rating_in, {:id => "ratings_#{r}", :name => "q[rating_in][]"}, r, ""
+    %fieldset.submit
+      = f.submit 'Filter', :id => 'ratings_submit'
+
+%table#movies
+  %thead
+    %tr
+      %th{hilite_class(@q, :title)}
+        = sort_link @q, :title, "Movie Title", {}, :id => 'title_header'
+      %th Rating
+      %th{hilite_class(@q, :release_date)}
+        = sort_link @q, :release_date, "Release Date", {}, :id => 'release_date_header'
+      %th More Info
+  %tbody
+    - @movies.each do |movie|
+      %tr
+        %td= movie.title
+        %td= movie.rating
+        %td= movie.release_date
+        %td= link_to "More about #{movie.title}", movie_path(movie)
+
+= link_to 'Add new movie', new_movie_path
